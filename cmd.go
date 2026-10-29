@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"time"
 )
@@ -30,6 +31,13 @@ type Task struct {
 	Due_to time.Time
 	Priority int
 	Is_deleted bool
+}
+
+type Arguments struct {
+	Priority int
+	Single int
+	Filter string
+	Due_to time.Time
 }
 
 func NewTask(id int, title string, description string, 
@@ -76,6 +84,61 @@ func Help() (string) {
 	return helptext
 }
 
-func UpdateTaskList() {
+func ParseFlags(args []string) (Arguments, error){
+	result := Arguments{}
 
+	fs := flag.NewFlagSet("task", flag.ContinueOnError)
+	priorityPtr := fs.Int("priority", 0, "приоритет")
+	priorityShortPtr := fs.Int("p", 0, "приоритет (коротко)")
+	due_toPtr := fs.String("due_to", "", "дедлайн")
+	due_toShortPtr := fs.String("d", "", "дедлайн (коротко)")
+	filterPtr := fs.String("filter", "asc", "фильтр")
+	filterShortPtr := fs.String("f", "asc", "фильтр (коротко)")
+	singlePtr := fs.Int("single", 0, "номер задачи")
+	singleShortPtr := fs.Int("s", 0, "номер задачи (коротко)")
+
+	if err := fs.Parse(args); err != nil {
+		err = fmt.Errorf("Error in parsing args: %w", err)
+		return result, err
+	}
+
+	priority := *priorityPtr
+	if *priorityShortPtr != 0 {
+		priority = *priorityShortPtr
+	}
+
+	single := *singlePtr
+	if *singleShortPtr != 0 {
+		single = *singleShortPtr
+	}
+
+	filter := *filterPtr
+	if *filterShortPtr != "asc" {
+		filter = *filterShortPtr
+	}
+	if filter != "asc" && filter != "desc" {
+		err := fmt.Errorf("Error in filter. Enter correct argument (asc/desc)")
+		return result, err
+	}
+
+	due_toStr := *due_toPtr
+	if *due_toShortPtr != "" {
+		due_toStr = *due_toShortPtr
+	}
+	var due_to time.Time
+	if due_toStr != "" {
+		parsedTime, err := time.Parse("2006-01-02 15:04", due_toStr)
+		if err != nil {
+				err = fmt.Errorf("неверный формат времени '%s'. Ожидается YYYY-MM-DD HH:MM", due_toStr)
+				return result, err
+			}
+		due_to = parsedTime
+	}
+
+	result.Priority = priority
+	result.Single = single
+	result.Filter = filter
+	result.Due_to = due_to
+
+	return result, nil
 }

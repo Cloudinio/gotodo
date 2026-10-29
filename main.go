@@ -11,14 +11,22 @@ import (
 )
 
 func main() {
-	tasks := make([]Task, 5)	
+	tasks := make([]Task, 0, 5)	
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		cmd, _ := reader.ReadString('\n')
-		cmd = strings.TrimSpace(cmd)
+		sentence, _ := reader.ReadString('\n')
+		sentence = strings.TrimSpace(sentence)
+		parts := strings.Fields(sentence)
+		if parts[0] != "todo" {
+			fmt.Println("Unknown command, Type 'help' to see all commands")
+			return
+		}
+		cmd := parts[1]
+		flags := parts[2:]
+
 
 		switch cmd {
-		case "todo add":
+		case "add":
 			fmt.Println("Enter some details")
 
 			fmt.Print("Title: ")
@@ -55,10 +63,10 @@ func main() {
 		
 			fmt.Println("Task created successfully")
 
-		case "todo list":
-			ShowAllTasks(tasks)
+		case "list":
+			ParseFlags(flags)
 
-		case "todo done":
+		case "done":
 			fmt.Println("ID of task: ")
 			idStr, _ := reader.ReadString('\n')
 			id, err := strconv.Atoi(idStr)
@@ -69,7 +77,7 @@ func main() {
 			task := tasks[id]
 			task.MarkAsDone()
 
-		case "todo delete":
+		case "delete":
 			fmt.Println("ID of task: ")
 			idStr, _ := reader.ReadString('\n')
 			id, err := strconv.Atoi(idStr)
@@ -79,7 +87,7 @@ func main() {
 			task := tasks[id]
 			task.MarkAsDeleted()
 
-		case "todo help":
+		case "help":
 			fmt.Println(Help())
 		default:
 			fmt.Println("Uknown command. Type 'todo help' to see all commands and flags")
