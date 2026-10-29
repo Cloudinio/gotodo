@@ -9,24 +9,16 @@ const helptext string = `
 Использование:
   todo <команда> [флаги]
 
-Команды:
+Команды и доступыне для них флаги:
   add        добавить задачу
   list       показать список задач
+  		-p, --priority		вывести задачи определенного приоритета
+		-d, --due_to		вывести задачи до определенной даты включительно
+		-f, --filter		вывести задачи по убыванию или возрастанию приоритета (desc/asc)
+		-s, --single		вывести задачу с определенным номером
   done       отметить задачу выполненной
   delete     удалить задачу
-  help       показать эту справку
-
-Флаги:
-  -h, --help      показать справку
-  -p, --priority  показать 
-  -d, --due_to    показать
-  -f, --filter    
-
-Примеры:
-  todo add "Купить молоко" --due "2025-01-01 18:00" --priority 2
-  todo list --all
-  todo done 3
-
+  help       показать справку
 `
 
 type Task struct {
@@ -80,8 +72,8 @@ func ShowAllTasks(tasks []Task) {
 	}
 }
 
-func ShowAllCommands() {
-
+func Help() (string) {
+	return helptext
 }
 
 func UpdateTaskList() {

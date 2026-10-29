@@ -32,7 +32,7 @@ func main() {
 			fmt.Print("Due to: ")
 			due_toStr, _ := reader.ReadString('\n')
 			due_toStr = strings.TrimSpace(due_toStr)
-			due_to, err := time.Parse("", due_toStr)
+			due_to, err := time.Parse("2006-01-02 15:04", due_toStr)
 			if err != nil {
 				err = fmt.Errorf("Error in parsing time. Enter time correctly. Returning to main menu")
 				fmt.Println(err)
@@ -78,8 +78,11 @@ func main() {
 			}
 			task := tasks[id]
 			task.MarkAsDeleted()
+
+		case "todo help":
+			fmt.Println(Help())
 		default:
-			fmt.Println("Uknown command. Type 'commands' to see all commands and flags")
+			fmt.Println("Uknown command. Type 'todo help' to see all commands and flags")
 		}
 	}
 }
